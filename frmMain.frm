@@ -58,6 +58,9 @@ End Type
 'Connection list
 Private conns() As ConnectionInfo
 
+'Global buffer
+Private buffer() As Byte
+
 'Pointer to first free connection
 Private freePtr As Long
 
@@ -333,12 +336,11 @@ Private Sub sockClient_SendComplete(Index As Integer)
             End If
             
             'Read data
-            Dim data() As Byte
-            ReDim data(bytesToRead)
-            Get #conns(Index).FileNbr, , data
+            ReDim buffer(bytesToRead)
+            Get #conns(Index).FileNbr, , buffer
             
             'Send data on
-            sockClient(Index).SendData data
+            sockClient(Index).SendData buffer
             
             Exit Sub
         End If
