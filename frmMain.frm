@@ -188,19 +188,17 @@ Private Sub DoGetRequest(ByVal id As Integer, ByRef filename As String)
     
     On Local Error GoTo 0
     
-    'Send response
-    If LOF(FileNbr) > 0 Then
-        'OK
-        sockClient(id).SendData "HTTP/1.0 200 OK" & vbCrLf & vbCrLf
-        
-        'Assign file to connection
-        conns(id).FileNbr = FileNbr
+    'Send OK response
+    sockClient(id).SendData "HTTP/1.0 200 OK" & vbCrLf & vbCrLf
+    
+    'Any data?
+    If LOF(fileNbr) = 0 Then
+    	'Free file
+    	Close #fileNbr
+    	conns(id).FileNbr = -2
     Else
-        'Nothing in file
-        sockClient(id).SendData "HTTP/1.0 204 No Content" & vbCrLf & vbCrLf
-        
-        'Set EOF in connection properties
-        conns(id).FileNbr = -2
+    	'Assign file to connection
+    	conns(id).FileNbr = FileNbr
     End If
 End Sub
 
