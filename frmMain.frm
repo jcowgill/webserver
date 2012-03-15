@@ -144,9 +144,10 @@ Private Sub DoGetRequest(ByVal id As Integer, ByRef filename As String)
     If (GetAttr(newFilename) And vbDirectory) <> 0 Then
         'Only continue if there is no error
         If Err.Number = 0 Then
-            'Add \ if it isn't there
+            'Redirect if path does not end in a \
             If Right$(newFilename, 1) <> "\" Then
-                newFilename = newFilename & "\"
+                SendError id, "301 Moved Permanently" & vbCrLf & "Location: " & filename & "/"
+                Exit Sub
             End If
         
             'Add index.html
