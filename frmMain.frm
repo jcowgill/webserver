@@ -6,7 +6,6 @@ Begin VB.Form frmMain
    ClientLeft      =   60
    ClientTop       =   450
    ClientWidth     =   4680
-   LinkTopic       =   ""
    ScaleHeight     =   3090
    ScaleWidth      =   4680
    StartUpPosition =   3  'Windows Default
@@ -34,20 +33,20 @@ Attribute VB_Exposed = False
 Option Explicit
 Option Compare Binary
 
-'TODO
-' Global block array
-
 'Port to listen on
 Private Const PORT As Long = 1503
 
 'Path to html files (must not end in a \)
-Private Const HTDOCS As String = "N:"
+Private Const HTDOCS As String = "N:\Computing\x\git\doc\git\html"
 
 'Default html file
 Private Const DEFAULT_FILE As String = "index.html"
 
+'Server information (must not contain spaces)
+Private Const SERVER_LINE As String = "WebCow/1.0"
+
 'Size of blocks to send
-Private Const BLOCK_SIZE As Long = 16384	'16 KB
+Private Const BLOCK_SIZE As Long = 16384        '16 KB
 
 'Information about a connection
 Private Type ConnectionInfo
@@ -84,9 +83,29 @@ Private Sub GrowConnections()
     Next
 End Sub
 
-Private Sub SendError(ByVal id As Integer, ByVal str As String)
+Private Function HttpFormatDate(ByVal dateVal As Date) As String
+    'Formats a date for http
+    HttpFormatDate = Format$(dateVal, "ddd, dd mmm yyyy Hh:Nn:Ss") & " GMT"
+End Function
+
+Private Sub SendHeader(ByVal id As Integer, ByVal header As String, ByVal value As String)
+    'Send header to client
+    sockClient(id).SendData header & ": " & value & vbCrLf
+End Sub
+
+Private Sub SendResponse(ByVal id As Integer, ByVal status As String)
+    'Sends the response line and main headers
+    sockClient(id).SendData "HTTP/1.0 " & status & vbCrLf
+    sockClient(id).SendData "Date: " & HttpFormatDate(Now) & vbCrLf
+    sockClient(id).SendData "Server: " & SERVER_LINE & vbCrLf
+End Sub
+
+Private Sub SendError(ByVal id As Integer, ByVal status As String)
     'Send error response
-    sockClient(id).SendData "HTTP/1.0 " & str & vbCrLf & vbCrLf
+    SendResponse id, status
+    
+    'End of headers
+    sockClient(id).SendData vbCrLf
     conns(id).FileNbr = -2
 End Sub
 
@@ -193,16 +212,20 @@ Private Sub DoGetRequest(ByVal id As Integer, ByRef filename As String)
     On Local Error GoTo 0
     
     'Send OK response
-    sockClient(id).SendData "HTTP/1.0 200 OK" & vbCrLf & vbCrLf
+    SendResponse id, "HTTP/1.0 200 OK"
+    SendHeader id, "Content-Length", LOF(FileNbr)
+    SendHeader id, "Last-Modified", HttpFormatDate(FileDateTime(newFilename))
+    
+    sockClient(id).SendData vbCrLf
     
     'Any data?
-    If LOF(fileNbr) = 0 Then
-    	'Free file
-    	Close #fileNbr
-    	conns(id).FileNbr = -2
+    If LOF(FileNbr) = 0 Then
+        'Free file
+        Close #FileNbr
+        conns(id).FileNbr = -2
     Else
-    	'Assign file to connection
-    	conns(id).FileNbr = FileNbr
+        'Assign file to connection
+        conns(id).FileNbr = FileNbr
     End If
 End Sub
 
