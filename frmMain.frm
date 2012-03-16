@@ -69,9 +69,78 @@ Private freePtr As Long
 Private Sub SetupContentTypes()
     'Add extension -> content type mappings
     Set contentTypes = New Collection
-    contentTypes.Add "text/html", "html"
+    contentTypes.Add "application/java-archive", "jar"
+    contentTypes.Add "application/java-vm", "class"
+    contentTypes.Add "application/javascript", "js"
+    contentTypes.Add "audio/midi", "mid"
+    contentTypes.Add "audio/midi", "midi"
+    contentTypes.Add "audio/mpeg", "mp3"
+    contentTypes.Add "audio/ogg", "ogg"
+    contentTypes.Add "audio/x-ms-wma", "wma"
+    contentTypes.Add "audio/x-wav", "wav"
+    contentTypes.Add "image/bmp", "bmp"
+    contentTypes.Add "image/gif", "gif"
+    contentTypes.Add "image/jpeg", "jpg"
+    contentTypes.Add "image/jpeg", "jpeg"
+    contentTypes.Add "image/png", "png"
+    contentTypes.Add "image/tiff", "tif"
+    contentTypes.Add "image/tiff", "tiff"
+    contentTypes.Add "image/vnd.adobe.photoshop", "psd"
+    contentTypes.Add "image/x-icon", "ico"
+    contentTypes.Add "message/rfc822", "eml"
+    contentTypes.Add "text/css", "css"
+    contentTypes.Add "text/csv", "csv"
     contentTypes.Add "text/html", "htm"
+    contentTypes.Add "text/html", "html"
+    contentTypes.Add "text/plain", "txt"
+    contentTypes.Add "text/plain", "text"
+    contentTypes.Add "text/plain", "conf"
+    contentTypes.Add "text/plain", "def"
+    contentTypes.Add "text/plain", "list"
+    contentTypes.Add "text/plain", "log"
+    contentTypes.Add "text/x-asm", "asm"
+    contentTypes.Add "text/x-asm", "s"
+    contentTypes.Add "text/x-c", "c"
+    contentTypes.Add "text/x-c", "cc"
+    contentTypes.Add "text/x-c", "cpp"
+    contentTypes.Add "text/x-c", "h"
+    contentTypes.Add "text/x-c", "hh"
+    contentTypes.Add "text/x-java-source", "java"
+    contentTypes.Add "video/mp4", "mp4"
+    contentTypes.Add "video/mpeg", "mpeg"
+    contentTypes.Add "video/mpeg", "mpg"
+    contentTypes.Add "video/ogg", "ogv"
+    contentTypes.Add "video/x-msvideo", "avi"
 End Sub
+
+Private Function GetContentType(ByVal filename As String) As String
+    Dim dotPos As Long
+    Dim slashPos As Long
+    
+    'Get positions of special characters
+    dotPos = InStrRev(filename, ".")
+    slashPos = InStrRev(filename, "\")
+    
+    'Is there a valid extension?
+    If dotPos <> 0 And dotPos > slashPos And Len(filename) > dotPos Then
+        'Trim string
+        filename = Trim$(Mid$(filename, dotPos + 1))
+    Else
+        'Use blank extension
+        filename = ""
+    End If
+    
+    'Lookup content type
+    On Local Error GoTo notFound
+    GetContentType = contentTypes.Item(filename)
+    
+    Exit Function
+    
+notFound:
+    'No content type found, use octet stream (raw binary data)
+    GetContentType = "application/octet-stream"
+    
+End Function
 
 Private Sub GrowConnections()
     'Double connection count
@@ -224,6 +293,7 @@ Private Sub DoGetRequest(ByVal id As Integer, ByRef filename As String)
     'Send OK response
     SendResponse id, "HTTP/1.0 200 OK"
     SendHeader id, "Content-Length", LOF(FileNbr)
+    SendHeader id, "Content-Type", GetContentType(newFilename)
     SendHeader id, "Last-Modified", HttpFormatDate(FileDateTime(newFilename))
     
     sockClient(id).SendData vbCrLf
