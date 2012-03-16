@@ -1,28 +1,224 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.OCX"
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "mswinsck.ocx"
 Begin VB.Form frmMain 
-   Caption         =   "frmMain"
-   ClientHeight    =   3090
+   Caption         =   "Web Server"
+   ClientHeight    =   2895
    ClientLeft      =   60
    ClientTop       =   450
-   ClientWidth     =   4680
-   ScaleHeight     =   3090
-   ScaleWidth      =   4680
+   ClientWidth     =   6375
+   ScaleHeight     =   2895
+   ScaleWidth      =   6375
    StartUpPosition =   3  'Windows Default
+   Begin VB.Timer timStatsTimer 
+      Interval        =   1000
+      Left            =   5760
+      Top             =   1680
+   End
    Begin MSWinsockLib.Winsock sockListener 
-      Left            =   240
-      Top             =   240
+      Left            =   5160
+      Top             =   1080
       _ExtentX        =   741
       _ExtentY        =   741
       _Version        =   393216
    End
    Begin MSWinsockLib.Winsock sockClient 
       Index           =   0
-      Left            =   840
-      Top             =   240
+      Left            =   5760
+      Top             =   1080
       _ExtentX        =   741
       _ExtentY        =   741
       _Version        =   393216
+   End
+   Begin VB.Label labKBytesDelta 
+      Alignment       =   1  'Right Justify
+      Caption         =   "0"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   1680
+      TabIndex        =   10
+      Top             =   2520
+      Width           =   1455
+   End
+   Begin VB.Label labKBytes 
+      Alignment       =   1  'Right Justify
+      Caption         =   "0"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   1680
+      TabIndex        =   9
+      Top             =   2160
+      Width           =   1455
+   End
+   Begin VB.Label labRequestsDelta 
+      Alignment       =   1  'Right Justify
+      Caption         =   "0"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   1680
+      TabIndex        =   8
+      Top             =   1800
+      Width           =   1455
+   End
+   Begin VB.Label labRequests 
+      Alignment       =   1  'Right Justify
+      Caption         =   "0"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   1680
+      TabIndex        =   7
+      Top             =   1440
+      Width           =   1455
+   End
+   Begin VB.Label Label6 
+      Caption         =   "KBytes / sec:"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   120
+      TabIndex        =   6
+      Top             =   2520
+      Width           =   1455
+   End
+   Begin VB.Label Label4 
+      Caption         =   "KBytes:"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   120
+      TabIndex        =   5
+      Top             =   2160
+      Width           =   1455
+   End
+   Begin VB.Label Label3 
+      Caption         =   "Requests / sec:"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   120
+      TabIndex        =   4
+      Top             =   1800
+      Width           =   1455
+   End
+   Begin VB.Label Label2 
+      Caption         =   "Requests:"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   255
+      Left            =   120
+      TabIndex        =   3
+      Top             =   1440
+      Width           =   1455
+   End
+   Begin VB.Label Label1 
+      Caption         =   "Statistics"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Left            =   120
+      TabIndex        =   2
+      Top             =   960
+      Width           =   1335
+   End
+   Begin VB.Label labAddress 
+      Alignment       =   2  'Center
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   13.5
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Left            =   120
+      TabIndex        =   1
+      Top             =   480
+      Width           =   6135
+   End
+   Begin VB.Label labRunning 
+      Caption         =   "Web server running. Goto this address in a web browser."
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   375
+      Left            =   120
+      TabIndex        =   0
+      Top             =   120
+      Width           =   6135
    End
 End
 Attribute VB_Name = "frmMain"
@@ -65,6 +261,12 @@ Private contentTypes As Collection
 
 'Pointer to first free connection
 Private freePtr As Long
+
+'STATISTICS
+Private requests As Long
+Private requestsBefore As Long
+Private bytes As Long
+Private bytesBefore As Long
 
 Private Sub SetupContentTypes()
     'Add extension -> content type mappings
@@ -167,16 +369,22 @@ Private Function HttpFormatDate(ByVal dateVal As Date) As String
     HttpFormatDate = Format$(dateVal, "ddd, dd mmm yyyy Hh:Nn:Ss") & " GMT"
 End Function
 
+Private Sub SendData(ByVal id As Integer, ByVal data As String)
+    'Send data and update byte count
+    bytes = bytes + Len(data)
+    sockClient(id).SendData data
+End Sub
+
 Private Sub SendHeader(ByVal id As Integer, ByVal header As String, ByVal value As String)
     'Send header to client
-    sockClient(id).SendData header & ": " & value & vbCrLf
+    SendData id, header & ": " & value & vbCrLf
 End Sub
 
 Private Sub SendResponse(ByVal id As Integer, ByVal status As String)
     'Sends the response line and main headers
-    sockClient(id).SendData "HTTP/1.0 " & status & vbCrLf
-    sockClient(id).SendData "Date: " & HttpFormatDate(Now) & vbCrLf
-    sockClient(id).SendData "Server: " & SERVER_LINE & vbCrLf
+    SendData id, "HTTP/1.0 " & status & vbCrLf
+    SendData id, "Date: " & HttpFormatDate(Now) & vbCrLf
+    SendData id, "Server: " & SERVER_LINE & vbCrLf
 End Sub
 
 Private Sub SendError(ByVal id As Integer, ByVal status As String)
@@ -184,7 +392,7 @@ Private Sub SendError(ByVal id As Integer, ByVal status As String)
     SendResponse id, status
     
     'End of headers
-    sockClient(id).SendData vbCrLf
+    SendData id, vbCrLf
     conns(id).FileNbr = -2
 End Sub
 
@@ -295,8 +503,7 @@ Private Sub DoGetRequest(ByVal id As Integer, ByRef filename As String)
     SendHeader id, "Content-Length", LOF(FileNbr)
     SendHeader id, "Content-Type", GetContentType(newFilename)
     SendHeader id, "Last-Modified", HttpFormatDate(FileDateTime(newFilename))
-    
-    sockClient(id).SendData vbCrLf
+    SendData id, vbCrLf
     
     'Any data?
     If LOF(FileNbr) = 0 Then
@@ -321,6 +528,9 @@ Private Sub Form_Load()
     ReDim conns(0)
     conns(0).FreeChain = -1
     freePtr = 0
+    
+    'Set running address
+    labAddress = "http://" & sockListener.LocalHostName & ":" & PORT & "/"
     
 End Sub
 
@@ -446,6 +656,7 @@ Private Sub sockClient_SendComplete(Index As Integer)
             Get #conns(Index).FileNbr, , buffer
             
             'Send data on
+            bytes = bytes + bytesToRead
             sockClient(Index).SendData buffer
             
             Exit Sub
@@ -476,4 +687,19 @@ Private Sub sockListener_ConnectionRequest(ByVal requestID As Long)
     sockClient(sockID).Close
     sockClient(sockID).Accept requestID
     conns(sockID).FileNbr = -1
+    
+    'Increment request count
+    requests = requests + 1
+End Sub
+
+Private Sub timStatsTimer_Timer()
+    'Update requests
+    labRequests = requests
+    labRequestsDelta = requests - requestsBefore
+    requestsBefore = requests
+    
+    'Update KBytes
+    labKBytes = Int(bytes / 1024)
+    labKBytesDelta = Int((bytes - bytesBefore) / 1024)
+    bytesBefore = bytes
 End Sub
