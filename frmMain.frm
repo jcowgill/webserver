@@ -60,8 +60,18 @@ Private conns() As ConnectionInfo
 'Global buffer
 Private buffer() As Byte
 
+'Content type mappings
+Private contentTypes As Collection
+
 'Pointer to first free connection
 Private freePtr As Long
+
+Private Sub SetupContentTypes()
+    'Add extension -> content type mappings
+    Set contentTypes = New Collection
+    contentTypes.Add "text/html", "html"
+    contentTypes.Add "text/html", "htm"
+End Sub
 
 Private Sub GrowConnections()
     'Double connection count
@@ -230,6 +240,9 @@ Private Sub DoGetRequest(ByVal id As Integer, ByRef filename As String)
 End Sub
 
 Private Sub Form_Load()
+    'Setup types
+    SetupContentTypes
+
     'Start listening
     sockListener.Bind PORT
     sockListener.Listen
